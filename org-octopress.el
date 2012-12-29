@@ -2740,7 +2740,7 @@ See `org-publish-org-to' to the list of arguments."
                                       ;;     (setq url (match-string 2 org-line)))
 
                                       (replace-match
-                                       (concat "#+begin_html\n{% include_code " url " %}\n#+end_html")
+                                       (concat "#+begin_html\n{% include_code " (substring org-line 7) " %}\n#+end_html")
                                        t nil org-line)
                                       )
                                )
