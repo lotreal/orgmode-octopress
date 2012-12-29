@@ -2728,6 +2728,13 @@ See `org-publish-org-to' to the list of arguments."
                              org-line
                              )
                            )
+
+                         (if (string-match "^[ \t]*#\\+\\(code\\|CODE\\)[ \t]*\\([^\n \t]+\\)" org-line)
+                             (replace-match
+                              (concat "#+begin_html\n{% include_code " "haha.js" " %}\n#+end_html")
+                              t nil org-line)
+                           org-line
+                           )
                          )
                      separated))
     (mapconcat 'identity separated "\n")
