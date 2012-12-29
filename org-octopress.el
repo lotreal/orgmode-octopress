@@ -2730,9 +2730,20 @@ See `org-publish-org-to' to the list of arguments."
                            )
 
                          (if (string-match "^[ \t]*#\\+\\(code\\|CODE\\)[ \t]*\\([^\n \t]+\\)" org-line)
-                             (replace-match
-                              (concat "#+begin_html\n{% include_code " "haha.js" " %}\n#+end_html")
-                              t nil org-line)
+                             (let* (
+                                    (title nil)
+                                    (url "hello.js")
+                                    (urltext nil)
+                                    )
+                               (progn (setq url "hello.js")
+                                      ;; (if (string-match ":\\(url\\|URL\\)[ \t]+\\([^\n \t]+\\)" org-line)
+                                      ;;     (setq url (match-string 2 org-line)))
+
+                                      (replace-match
+                                       (concat "#+begin_html\n{% include_code " url " %}\n#+end_html")
+                                       t nil org-line)
+                                      )
+                               )
                            org-line
                            )
                          )
