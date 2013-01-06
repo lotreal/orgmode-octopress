@@ -2696,47 +2696,49 @@ See `org-publish-org-to' to the list of arguments."
          )
     (setq separated (mapcar
                      #'(lambda (org-line)
-                         (if (and (not in_code_block)
-                                  (string-match "^[ \t]*#\\+\\(begin_src\\|BEGIN_SRC\\)[ \t]*\\([^\n \t]+\\)" org-line))
-                             (progn (print org-line)
-                                    (let* ((lang (match-string 2 org-line))
-                                           (title nil)
-                                           (url nil)
-                                           (urltext nil)
-                                           )
-                                      (if (string-match "dot" lang)
-                                          org-line
-                                        (progn
-                                          (setq in_code_block t)
-                                          (if (string-match ":\\(title\\|TITLE\\)[ \t]+\\([^:]+\\)" org-line)
-                                              (progn (print "TITLE") (setq title (match-string 2 org-line))))
-                                          (if (string-match ":\\(url\\|URL\\)[ \t]+\\([^\n \t]+\\)" org-line)
-                                              (setq url (match-string 2 org-line)))
-                                          (if (string-match ":\\(urltext\\|URLTEXT\\)[ \t]+\\([^:]+\\)" org-line)
-                                              (setq urltext (match-string 2 org-line)))
-                                          (concat "#+begin_html\n{% codeblock " (if title (concat title " ") "") "lang:" (change-source-name lang) " "  (if url (concat url " ") "") (if urltext (concat urltext " ") "") "%}")
+                         (if (string-match "^[ \t]*#\\+\\(octopress\\|OCTOPRESS\\)[ \t]*\\([^\n]+\\)" org-line)
+                             (progn
+                               (let* ((octo (match-string 2 org-line))
+                                      )
+                                 (replace-match
+                                  (concat "#+begin_html\n{% " octo " %}\n#+end_html")
+                                  t nil org-line)
+                                 )
+                               )
+
+                           (if (and (not in_code_block)
+                                    (string-match "^[ \t]*#\\+\\(begin_src\\|BEGIN_SRC\\)[ \t]*\\([^\n \t]+\\)" org-line))
+                               (progn (print org-line)
+                                      (let* ((lang (match-string 2 org-line))
+                                             (title nil)
+                                             (url nil)
+                                             (urltext nil)
+                                             )
+                                        (if (string-match "dot" lang)
+                                            org-line
+                                          (progn
+                                            (setq in_code_block t)
+                                            (if (string-match ":\\(title\\|TITLE\\)[ \t]+\\([^:]+\\)" org-line)
+                                                (progn (print "TITLE") (setq title (match-string 2 org-line))))
+                                            (if (string-match ":\\(url\\|URL\\)[ \t]+\\([^\n \t]+\\)" org-line)
+                                                (setq url (match-string 2 org-line)))
+                                            (if (string-match ":\\(urltext\\|URLTEXT\\)[ \t]+\\([^:]+\\)" org-line)
+                                                (setq urltext (match-string 2 org-line)))
+                                            (concat "#+begin_html\n{% codeblock " (if title (concat title " ") "") "lang:" (change-source-name lang) " "  (if url (concat url " ") "") (if urltext (concat urltext " ") "") "%}")
+                                            )
                                           )
                                         )
-                                      
                                       )
-                                    )
-                           (if (and in_code_block
-                                    (string-match "[ \t]*#\\+\\(end_src\\|END_SRC\\)" org-line))
-                               (progn (setq in_code_block nil)
-                                      (replace-match "{% endcodeblock %}\n#+end_html" t nil org-line)
-                                      )
-                             org-line
+                             (if (and in_code_block
+                                      (string-match "[ \t]*#\\+\\(end_src\\|END_SRC\\)" org-line))
+                                 (progn (setq in_code_block nil)
+                                        (replace-match "{% endcodeblock %}\n#+end_html" t nil org-line)
+                                        )
+                               org-line
+                               )
                              )
                            )
-
-                         (if (string-match "^[ \t]*#\\+\\(octopress\\|OCTOPRESS\\)[ \t]*\\([^\n \t]+\\)" org-line)
-                             (replace-match
-                              (concat "#+begin_html\n{% " (substring org-line 12) " %}\n#+end_html")
-                              t nil org-line)
-                           org-line
-                           )
                          )
-
                      separated))
     (mapconcat 'identity separated "\n")
     )
